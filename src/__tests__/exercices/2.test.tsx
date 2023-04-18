@@ -2,13 +2,18 @@ import { describe, test, expect } from 'vitest';
 import { screen, render } from '@testing-library/react';
 import { Counter } from '../../components/counter/Counter';
 import userEvent from '@testing-library/user-event';
+import type { ReactElement } from 'react';
 
-const user = userEvent.setup();
+const setup = (jsx: ReactElement) => (
+  {
+    user: userEvent.setup(),
+    ...render(jsx),
+  }
+);
 
 describe('Counter', () => {
   test('the buttons minus and plus are functionnal when clicked', async () => {
-    // 🦁 Utilise `render` de `@testing-library/react` pour rendre le composant `Counter`
-    render(<Counter />);
+    const { user } = setup(<Counter />);
     // 🦁 Récupérer le span qui contient le nombre avec screen.getByText
     const numberCounter = screen.getByText("0");
     // // 🦁 Récupère le bouton plus avec `screen.getByRole`
