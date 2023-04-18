@@ -1,5 +1,5 @@
 // 🦁 Ajoute `expect` à l'import de `vitest`
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 // 🦁 Dé-commente les imports suivants
 import ReactDOM from 'react-dom/client';
 import { act } from 'react-dom/test-utils';
@@ -56,6 +56,22 @@ describe('Counter', () => {
     const counter = await render(<Counter defaultValue={defaultValue}/>);
     const counterNumber = document.querySelector('span');
     expect(counterNumber?.textContent).toBe(String(defaultValue));
+    counter.remove();
+  });
+
+  test('onChange Fn is called and passed with correct values', async () => {
+    const onChangeMock = vi.fn();
+    const counter = await render(<Counter onChange={onChangeMock} />);
+    const buttons = [...document.querySelectorAll('button')];
+    const [plus, minus] = buttons;
+
+    await click(minus);
+    expect(onChangeMock).toHaveBeenCalledTimes(1);
+    expect(onChangeMock).toHaveBeenCalledWith(-1);
+    
+    await click(plus);
+    expect(onChangeMock).toHaveBeenNthCalledWith(2, 0);
+    
     counter.remove();
   });
 });
