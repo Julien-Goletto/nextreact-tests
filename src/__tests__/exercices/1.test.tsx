@@ -52,9 +52,10 @@ describe('Counter', () => {
   });
 
   test('the counter is rendered with a custom default value if specified', async () => {
-    const counter = await render(<Counter defaultValue={1}/>);
+    const defaultValue = 3644;
+    const counter = await render(<Counter defaultValue={defaultValue}/>);
     const counterNumber = document.querySelector('span');
-    expect(counterNumber?.textContent).toBe('1');
+    expect(counterNumber?.textContent).toBe(String(defaultValue));
     counter.remove();
   });
 });
