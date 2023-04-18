@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 import { screen, render } from '@testing-library/react';
 import { Counter } from '../../components/counter/Counter';
 import userEvent from '@testing-library/user-event';
@@ -26,5 +26,23 @@ describe('Counter', () => {
     await user.click(minus);
     // 🦁 Vérifie que le contenue du span est "0"
     expect(numberCounter.textContent).toBe("0");
+  });
+
+  test('the counter is rendered with a custom default value if specified', async () => {
+    const defaultValue = 3644;
+    setup(<Counter defaultValue={defaultValue}/>);
+    screen.getByText(String(defaultValue));
+  });
+
+  test('onChange Fn is called and passed with correct values', async () => {
+    const onChangeMock = vi.fn();
+    const { user } = setup(<Counter onChange={onChangeMock}/>);
+    const [plus, minus] = screen.getAllByRole("button");
+    await user.click(minus);
+    expect(onChangeMock).toHaveBeenCalledTimes(1);
+    expect(onChangeMock).toHaveBeenCalledWith(-1);
+    
+    await user.click(plus);
+    expect(onChangeMock).toHaveBeenNthCalledWith(2, 0);
   });
 });
