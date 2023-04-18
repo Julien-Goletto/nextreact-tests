@@ -5,40 +5,49 @@ import ReactDOM from 'react-dom/client';
 import { act } from 'react-dom/test-utils';
 import { Counter } from '../../components/counter/Counter';
 import { wait } from '../../test/wait';
+import type{ ReactNode } from 'react';
+
+const render = async(component: ReactNode) => {
+    const div = document.createElement('div');
+    document.body.append(div);
+    act(() => {
+      const root = ReactDOM.createRoot(div);
+      root.render(component);
+    });
+    return div;
+};
+
+const click = async(element: HTMLElement) => {
+  const event = new MouseEvent('click', {
+    bubbles: true,
+    cancelable: true,
+  });
+
+  await act(async() => {
+    element.dispatchEvent(event);
+    await wait(1);
+  });
+};
 
 describe('Counter', () => {
   test('the counter is decremented when the minus button is clicked', async () => {
-    // 🦁 Créer un élément `div` avec `document.createElement`
-    const div = document.createElement('div');
-    // 🦁 Ajouter l'élément `div` au `body` avec `document.body.append`
-    document.body.append(div);
-    // ---
-    // 🦁 Il faut wrapper la suite dans un `act` comme expliqué dans les instructions
-    // 🦁 Créer un `root` avec `ReactDOM.createRoot`
-    // 🦁 Rendre le composant `Counter` dans le `root`
-    await act(() => {
-      const root = ReactDOM.createRoot(div);
-      root.render(<Counter />);
-    });
-    // --
-    // 🦁 Récupère le bouton "minus"
+    const counter = await render(<Counter />);
     const buttons = [...document.querySelectorAll('button')];
-    const minusButton = buttons.find((b) => (b.textContent === '-'));
-    // 🦁 Utilise `expect` pour vérifier que le contenue du span est "0"
+    const [, minus] = buttons;
     const counterNumber = document.querySelector('span');
     expect(counterNumber?.textContent).toBe('0');
-    // --
-    // 🦁 Il faut wrapper l'appel du clique dans un `act`
-    await act(async () => {
-      // 🦁 Clique sur le bouton "moins"
-      minusButton?.click();
-      // 🦁 Attendre 1ms
-      // setTimeout(() => {
-      //   return;
-      // }, 1000);
-      await wait(1);
-    });
-    // 🦁 Vérifie que le contenue du span est "-1"
+    await click(minus);
     expect(counterNumber?.textContent).toBe('-1');
+    counter.remove();
+  });
+
+  test('the counter is incremented when the plus button is clicked', async () => {
+    const counter = await render(<Counter />);
+    const buttons = [...document.querySelectorAll('button')];
+    const [plus, ] = buttons;
+    const counterNumber = document.querySelector('span');
+    await click(plus);
+    expect(counterNumber?.textContent).toBe('1');
+    counter.remove();
   });
 });
