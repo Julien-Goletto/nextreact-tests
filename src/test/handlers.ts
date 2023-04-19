@@ -11,6 +11,8 @@ export const restHandlers = [
       return res(ctx.json({ error: 'Invalid data' }), ctx.status(400));
     }
 
+    await wait(10);
+
     return res(
       ctx.json({
         username: body.username,
