@@ -27,6 +27,7 @@ const authFormSetup = async (username?: string) => {
 
 const invalidUsername = 'invalid_username';
 const invalidCredentialsError = 'Invalid credentials';
+const noMessageUsername = 'no_message';
 
 describe('Auth', () => {
   test('user is display after form submission if api send correct data', async () => {
@@ -45,5 +46,18 @@ describe('Auth', () => {
     
     await waitForElementToBeRemoved(() => screen.getByTestId('loader'));
     expect(screen.getByRole('alert')).toHaveTextContent(invalidCredentialsError);
+  });
+
+  test('if username is no_message, throws a 401 HTTP error without json and show a default message "An error occured"', async () => {
+    await authFormSetup(noMessageUsername);
+    
+    await waitForElementToBeRemoved(() => screen.getByTestId('loader'));
+    expect(screen.getByRole('alert')).toMatchInlineSnapshot(`
+      <p
+        role="alert"
+      >
+        An error occurred
+      </p>
+    `);
   });
 });

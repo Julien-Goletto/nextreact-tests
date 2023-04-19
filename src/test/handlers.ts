@@ -16,6 +16,10 @@ export const restHandlers = [
       return res(ctx.json({ message: 'Invalid credentials' }), ctx.status(401));
     }
 
+    if (body.username === 'no_message'){
+      return res(ctx.json({ a: 2 }), ctx.status(401));
+    }
+
     return res(
       ctx.json({
         username: body.username,
