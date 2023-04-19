@@ -39,4 +39,24 @@ describe('Login', () => {
     // 🦁 Ajoute une assertion pour vérifier que la fonction onSubmit a été appelée avec les bonnes données
     expect(onSubmit).toHaveBeenCalledWith(form);
   });
+  test('if isSubmitting, input and buttons must be disabled and the laoder should appear', async () => {
+    const onSubmit = vi.fn();
+    const { rerender } = setup(<Login onSubmit={onSubmit} isSubmitting={true} />);
+
+    const usernameInput = screen.getByRole('textbox', { name: /username/i });
+    const passwordInput = screen.getByRole('textbox', { name: /password/i });
+    const submitButton = screen.getByRole('button', { name: /login/i });
+    const loader = screen.queryByTestId('loader');
+    expect(usernameInput).toBeDisabled();
+    expect(passwordInput).toBeDisabled();
+    expect(submitButton).toBeDisabled();
+    expect(loader).toBeInTheDocument();
+
+    rerender(<Login onSubmit={onSubmit} isSubmitting={false} />);
+
+    expect(usernameInput).toBeEnabled();
+    expect(passwordInput).toBeEnabled();
+    expect(submitButton).toBeEnabled();
+    expect(loader).not.toBeInTheDocument();
+  });
 });
