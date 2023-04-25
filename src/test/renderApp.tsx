@@ -1,9 +1,14 @@
+import type{ RenderOptions } from "@testing-library/react";
 import { ThemeContextProvider } from "../components/theme/ThemeProvider";
 import { UserContextProvider } from "../components/user/UserProvider";
 import { setup } from "./setup";
 import type { PropsWithChildren, ReactElement } from "react";
 
-const Wrapper = (props: PropsWithChildren) => {
+type WrapperProps = {
+  test?: 'test';
+}
+
+const Wrapper = (props: PropsWithChildren<WrapperProps>) => {
   return (
     <ThemeContextProvider>
       <UserContextProvider>
@@ -13,6 +18,9 @@ const Wrapper = (props: PropsWithChildren) => {
   );
 };
 
-export const renderApp = (ui: ReactElement, options?: any) => {
-  return setup(ui, {wrapper: Wrapper, ...options});
+export const renderApp = (ui: ReactElement, options?: Omit<RenderOptions, 'queries' | 'wrapper'> & { test: 'test'}) => {
+  return setup(ui, {wrapper: ({children}) => 
+    <Wrapper test={options?.test}>{children}</Wrapper>, 
+    ...options,
+  });
 };
