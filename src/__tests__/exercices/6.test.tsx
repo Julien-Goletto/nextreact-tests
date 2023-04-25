@@ -1,18 +1,18 @@
-import type { ReactElement } from 'react';
-import { describe, test } from 'vitest';
+import { describe, test, expect } from 'vitest';
+import { screen, act } from '@testing-library/react';
 import { Dashboard } from '../../components/dashboard/Dashboard';
-import { setup } from '../../test/setup';
-
-const Wrapper = () => {
-  return <></>;
-};
-
-const customRender = (ui: ReactElement) => setup(ui, { wrapper: Wrapper });
+import { renderApp } from '../../test/renderApp';
 
 describe('Dashboard', () => {
   test('toggle dark mode update the dashboard colors', async () => {
-    const { user } = customRender(<Dashboard />);
-
+    const { user } = renderApp(<Dashboard />);
+    const darkmodeButton = screen.getByRole('button', {
+      name: /dark mode/i
+    });
     // 🦁 Toggle le dark mode et vérifier que le text à changer
+    await act(async() => {
+      await user.click(darkmodeButton);
+    });
+    expect(darkmodeButton).toHaveTextContent(/light mode/i);
   });
 });
