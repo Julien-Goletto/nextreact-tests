@@ -2,6 +2,7 @@ import { describe, test, expect } from 'vitest';
 import { screen, act } from '@testing-library/react';
 import { Dashboard } from '../../components/dashboard/Dashboard';
 import { renderApp } from '../../test/renderApp';
+import { useTheme } from '../../components/theme/ThemeProvider';
 
 describe('Dashboard', () => {
   test('toggle dark mode update the dashboard colors', async () => {
@@ -59,9 +60,29 @@ describe('DashboardHeader and DashboardUser', () => {
       await user.type(input, username);
       await user.click(loginButton);
     });
-    
+
     expect(screen.getByRole('button', {
       name: /logout/i
     })).toBeInTheDocument;
+  });
+});
+
+describe('ThemeProvider test', () => {
+  const TestComponent = () => {
+    const { theme, toggle } = useTheme();
+    return(
+      <button onClick={toggle}>{theme}</button>
+    );
+  };
+  
+  test('toggle dark mode update the dashboard colors', async () => {
+    const { user } = renderApp(<TestComponent/>);
+    const darkmodeButton = screen.getByRole('button', {
+      name: /dark/i
+    });
+    await act(async() => {
+      await user.click(darkmodeButton);
+    });
+    expect(darkmodeButton).toHaveTextContent(/light/i);
   });
 });
