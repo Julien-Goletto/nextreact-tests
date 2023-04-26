@@ -2,7 +2,7 @@ import { describe, test, expect } from 'vitest';
 import type { UseCounterOutput} from '../../hooks/useCounter';
 import { useCounter } from '../../hooks/useCounter';
 import { setup } from '../../test/setup';
-import { act, render, screen } from '@testing-library/react';
+import { act, render, renderHook, screen } from '@testing-library/react';
 
 const TestComponent = () => {
   const { count, decrement, increment, reset, setCount } = useCounter();
@@ -84,13 +84,33 @@ describe('useCounter', () => {
     });
     expect(counter.current.count).toBe(0);
   });
-
-  test('show the counter and increment/decrement/reset/set counter', async () => {
+  
+  test('Consider initialValue as starting value', async () => {
     const initialValue = 100;
-
+    
     const counter = setupCounter(initialValue);
-
+    
     expect(counter.current.count).toBe(100);
+    
+  });
+
+  test('Use renderHook this time', async () => {
+    const hook = renderHook(useCounter, { initialProps: 100 });
+    const counter = hook.result;
+    expect(counter.current.count).toBe(100);
+    
+    await act(async() => {
+      counter.current.increment();
+    });
+    expect(counter.current.count).toBe(101);
+
+    
+    hook.rerender(10);
+    await act(async() => {
+      counter.current.reset();
+    });
+    
+    expect(counter.current.count).toBe(10);
 
   });
 });
