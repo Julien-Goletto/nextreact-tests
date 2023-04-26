@@ -8,7 +8,7 @@ const TestComponent = () => {
   const { count, decrement, increment, reset, setCount } = useCounter();
   return (
     <>
-      <p data-testId='counter'>{count}</p>
+      <p data-testid='counter'>{count}</p>
       {/* 🦁 Crée des boutons pour nos différentes méthodes */}
       <button onClick={decrement}>Decrement</button>
       <button onClick={increment}>Increment</button>
@@ -16,6 +16,19 @@ const TestComponent = () => {
       <button onClick={reset}>Reset</button>
     </>
   );
+};
+
+const setupCounter = (initialValue?: number) => {
+  const hook = {} as {
+    current: UseCounterOutput;
+  };
+
+  const TestComponentBis = () => {
+    hook.current = useCounter(initialValue);
+    return null;
+  };
+  render(<TestComponentBis />);
+  return hook;
 };
 
 describe('useCounter', () => {
@@ -49,33 +62,35 @@ describe('useCounter', () => {
   });
 
   test('show the counter and increment/decrement/reset/set counter', async () => {
-    let counter: UseCounterOutput = null as unknown as UseCounterOutput;
-
-    const TestComponentBis = () => {
-      counter = useCounter();
-      return null;
-    };
-
-    render(<TestComponentBis />);
+    const counter = setupCounter();
 
     await act(async() => {
-      counter.decrement();
+      counter.current.decrement();
     });
-    expect(counter.count).toBe(-1);
+    expect(counter.current.count).toBe(-1);
 
     await act(async() => {
-      counter.increment();
+      counter.current.increment();
     });
-    expect(counter.count).toBe(0);
+    expect(counter.current.count).toBe(0);
     
     await act(async() => {
-      counter.setCount(10);
+      counter.current.setCount(10);
     });
-    expect(counter.count).toBe(10);
+    expect(counter.current.count).toBe(10);
 
     await act(async() => {
-      counter.reset();
+      counter.current.reset();
     });
-    expect(counter.count).toBe(0);
+    expect(counter.current.count).toBe(0);
+  });
+
+  test('show the counter and increment/decrement/reset/set counter', async () => {
+    const initialValue = 100;
+
+    const counter = setupCounter(initialValue);
+
+    expect(counter.current.count).toBe(100);
+
   });
 });
